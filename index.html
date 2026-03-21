@@ -18,16 +18,17 @@ body {
   flex-wrap: wrap;
 }
 
-/* LEFT (PLAYER) */
+/* LEFT PLAYER */
 .main {
   flex: 2;
   padding: 10px;
 }
 
-video {
+iframe {
   width: 100%;
+  height: 450px;
+  border: none;
   border-radius: 10px;
-  background: black;
 }
 
 .title {
@@ -35,6 +36,114 @@ video {
   font-size: 18px;
 }
 
+/* RIGHT SIDEBAR */
+.sidebar {
+  flex: 1;
+  max-height: 100vh;
+  overflow-y: auto;
+  border-left: 1px solid #333;
+}
+
+.video-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #222;
+}
+
+.video-item:hover {
+  background: #1f1f1f;
+}
+
+.thumb {
+  width: 120px;
+  height: 70px;
+  background: #333;
+  border-radius: 5px;
+}
+
+.video-info {
+  font-size: 14px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .container {
+    flex-direction: column;
+  }
+  iframe {
+    height: 220px;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- PLAYER -->
+  <div class="main">
+    <iframe id="player" src=""></iframe>
+    <div class="title" id="videoTitle">Select a video</div>
+  </div>
+
+  <!-- PLAYLIST -->
+  <div class="sidebar" id="playlist"></div>
+
+</div>
+
+<script>
+
+// 👉 এখানে আপনার Google Drive preview link দিন
+const videos = [
+  {
+    title: "My Video 1",
+    src: "https://drive.google.com/file/d/1SXyn2XZUv8KRfnr9IdhtOxssmz-ZEG6p/preview"
+  },
+  {
+    title: "Video 2",
+    src: "https://drive.google.com/file/d/FILE_ID_2/preview"
+  },
+  {
+    title: "Video 3",
+    src: "https://drive.google.com/file/d/FILE_ID_3/preview"
+  }
+];
+
+const player = document.getElementById("player");
+const title = document.getElementById("videoTitle");
+const playlist = document.getElementById("playlist");
+
+// load video
+function loadVideo(video){
+  player.src = video.src;
+  title.innerText = video.title;
+}
+
+// create playlist
+videos.forEach(video => {
+  let div = document.createElement("div");
+  div.className = "video-item";
+
+  div.innerHTML = `
+    <div class="thumb"></div>
+    <div class="video-info">${video.title}</div>
+  `;
+
+  div.onclick = () => loadVideo(video);
+
+  playlist.appendChild(div);
+});
+
+// auto load first video
+loadVideo(videos[0]);
+
+</script>
+
+</body>
+</html>
 /* RIGHT (PLAYLIST) */
 .sidebar {
   flex: 1;
