@@ -3,95 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Drive Video Site</title>
+<title>My Premium Video Site</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
 <style>
-body {
+/* Reset & Base */
+* {
   margin: 0;
-  font-family: Arial;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Roboto', sans-serif;
   background: #0f0f0f;
-  color: white;
+  color: #fff;
+}
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
+/* Header / Logo */
+header {
+  width: 100%;
+  padding: 15px 20px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+header img {
+  height: 40px;
+}
+header h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Main Container */
 .container {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 10px 20px;
+  gap: 10px;
 }
 
-/* MAIN PLAYER */
+/* Main Player */
 .main {
   flex: 2;
-  padding: 10px;
 }
-
 .player-wrapper {
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
-
-iframe {
+iframe#player {
   width: 100%;
-  height: 450px;
+  height: 480px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
-
-/* VIDEO TITLE */
 .title {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 500;
+  padding-left: 5px;
+  border-left: 3px solid #ff3d00;
 }
 
-/* PLAYLIST */
+/* Playlist Sidebar */
 .sidebar {
   flex: 1;
-  max-height: 100vh;
+  max-height: 90vh;
   overflow-y: auto;
   border-left: 1px solid #333;
+  padding-left: 10px;
 }
-
 .video-item {
   position: relative;
   display: flex;
   gap: 10px;
   padding: 10px;
   cursor: pointer;
-  border-bottom: 1px solid #222;
+  border-radius: 8px;
+  transition: 0.3s ease;
+  margin-bottom: 8px;
+  background: #1b1b1b;
 }
-
 .video-item:hover {
-  background: #1f1f1f;
+  background: #2b2b2b;
 }
-
-/* THUMBNAIL OVERLAY TRICK */
+.video-item.active {
+  border-left: 4px solid #ff3d00;
+}
 .thumb-wrapper {
   position: relative;
-  width: 120px;
-  height: 70px;
-  border-radius: 5px;
+  width: 140px;
+  height: 80px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
 }
-
 .thumb-wrapper iframe {
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Disable click on iframe */
+  pointer-events: none; /* Disable click */
+  filter: brightness(0.7);
 }
-
 .thumb-overlay {
   position: absolute;
   top:0;
   left:0;
   width:100%;
   height:100%;
-  background: rgba(0,0,0,0.3); /* optional dark overlay */
-  pointer-events: none; /* click pass to parent div */
+  pointer-events: none;
 }
-
 .video-info {
   font-size: 14px;
   display: flex;
   align-items: center;
+}
+
+/* Scrollbar Style */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
 }
 
 /* MOBILE */
@@ -99,21 +144,30 @@ iframe {
   .container {
     flex-direction: column;
   }
-  iframe {
+  iframe#player {
     height: 220px;
   }
   .thumb-wrapper {
-    width: 80px;
-    height: 50px;
+    width: 100px;
+    height: 60px;
+  }
+  header h1 {
+    font-size: 18px;
   }
 }
 </style>
 </head>
 <body>
 
+<!-- Header -->
+<header>
+  <img src="https://i.ibb.co/1f5Qp2q/logo.png" alt="Site Logo">
+  <h1>My Video Site</h1>
+</header>
+
 <div class="container">
 
-  <!-- MAIN PLAYER -->
+  <!-- Main Player -->
   <div class="main">
     <div class="player-wrapper">
       <iframe id="player" src="" allow="autoplay"></iframe>
@@ -121,7 +175,7 @@ iframe {
     <div class="title" id="videoTitle">Select a video</div>
   </div>
 
-  <!-- PLAYLIST -->
+  <!-- Playlist -->
   <div class="sidebar" id="playlist"></div>
 
 </div>
@@ -147,13 +201,17 @@ const player = document.getElementById("player");
 const title = document.getElementById("videoTitle");
 const playlist = document.getElementById("playlist");
 
-// Load video into main iframe
-function loadVideo(video){
+// Load video
+function loadVideo(video, itemDiv) {
   player.src = video.src;
   title.innerText = video.title;
+
+  // Highlight active video
+  document.querySelectorAll('.video-item').forEach(v => v.classList.remove('active'));
+  if(itemDiv) itemDiv.classList.add('active');
 }
 
-// Create playlist with thumbnail iframe overlay
+// Create playlist
 videos.forEach(video => {
   const div = document.createElement("div");
   div.className = "video-item";
@@ -166,14 +224,13 @@ videos.forEach(video => {
     <div class="video-info">${video.title}</div>
   `;
 
-  // Click on parent div loads video in main player
-  div.onclick = () => loadVideo(video);
+  div.onclick = () => loadVideo(video, div);
 
   playlist.appendChild(div);
 });
 
 // Load first video by default
-loadVideo(videos[0]);
+loadVideo(videos[0], playlist.firstChild);
 
 </script>
 </body>
