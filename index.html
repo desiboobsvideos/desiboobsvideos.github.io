@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Video Site</title>
-
+<title>Google Drive Video Site</title>
 <style>
 body {
   margin: 0;
@@ -18,10 +17,14 @@ body {
   flex-wrap: wrap;
 }
 
-/* LEFT PLAYER */
+/* MAIN PLAYER */
 .main {
   flex: 2;
   padding: 10px;
+}
+
+.player-wrapper {
+  position: relative;
 }
 
 iframe {
@@ -31,12 +34,14 @@ iframe {
   border-radius: 10px;
 }
 
+/* VIDEO TITLE */
 .title {
   margin-top: 10px;
   font-size: 18px;
+  font-weight: bold;
 }
 
-/* RIGHT SIDEBAR */
+/* PLAYLIST */
 .sidebar {
   flex: 1;
   max-height: 100vh;
@@ -45,6 +50,7 @@ iframe {
 }
 
 .video-item {
+  position: relative;
   display: flex;
   gap: 10px;
   padding: 10px;
@@ -56,15 +62,36 @@ iframe {
   background: #1f1f1f;
 }
 
-.thumb {
+/* THUMBNAIL OVERLAY TRICK */
+.thumb-wrapper {
+  position: relative;
   width: 120px;
   height: 70px;
-  background: #333;
   border-radius: 5px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumb-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Disable click on iframe */
+}
+
+.thumb-overlay {
+  position: absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.3); /* optional dark overlay */
+  pointer-events: none; /* click pass to parent div */
 }
 
 .video-info {
   font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 
 /* MOBILE */
@@ -75,17 +102,22 @@ iframe {
   iframe {
     height: 220px;
   }
+  .thumb-wrapper {
+    width: 80px;
+    height: 50px;
+  }
 }
 </style>
-
 </head>
 <body>
 
 <div class="container">
 
-  <!-- PLAYER -->
+  <!-- MAIN PLAYER -->
   <div class="main">
-    <iframe id="player" src=""></iframe>
+    <div class="player-wrapper">
+      <iframe id="player" src="" allow="autoplay"></iframe>
+    </div>
     <div class="title" id="videoTitle">Select a video</div>
   </div>
 
@@ -95,12 +127,11 @@ iframe {
 </div>
 
 <script>
-
-// 👉 এখানে আপনার Google Drive preview link দিন
+// Google Drive preview links
 const videos = [
   {
-    title: "My Video 1",
-    src: "https://drive.usercontent.google.com/u/0/uc?id=1SXyn2XZUv8KRfnr9IdhtOxssmz-ZEG6p&export=download"
+    title: "Video 1",
+    src: "https://drive.google.com/file/d/1SXyn2XZUv8KRfnr9IdhtOxssmz-ZEG6p/preview"
   },
   {
     title: "Video 2",
@@ -116,31 +147,34 @@ const player = document.getElementById("player");
 const title = document.getElementById("videoTitle");
 const playlist = document.getElementById("playlist");
 
-// load video
+// Load video into main iframe
 function loadVideo(video){
   player.src = video.src;
   title.innerText = video.title;
 }
 
-// create playlist
+// Create playlist with thumbnail iframe overlay
 videos.forEach(video => {
-  let div = document.createElement("div");
+  const div = document.createElement("div");
   div.className = "video-item";
 
   div.innerHTML = `
-    <div class="thumb"></div>
+    <div class="thumb-wrapper">
+      <iframe src="${video.src}"></iframe>
+      <div class="thumb-overlay"></div>
+    </div>
     <div class="video-info">${video.title}</div>
   `;
 
+  // Click on parent div loads video in main player
   div.onclick = () => loadVideo(video);
 
   playlist.appendChild(div);
 });
 
-// auto load first video
+// Load first video by default
 loadVideo(videos[0]);
 
 </script>
-
 </body>
 </html>
