@@ -143,10 +143,11 @@ videos.forEach(video=>{
 function showLatestVideos(){
   latestGrid.innerHTML = "";
 
-  const start = (currentPage-1) * videosPerPage;
+  const reversedVideos = videos.slice().reverse(); // পুরো লিস্ট উল্টো
+  const start = (currentPage - 1) * videosPerPage;
   const end = start + videosPerPage;
 
-  const pageVideos = videos.slice().reverse().slice(start,end);
+  const pageVideos = reversedVideos.slice(start, end);
 
   pageVideos.forEach((video, index)=>{
     const div = document.createElement('div');
@@ -158,10 +159,12 @@ function showLatestVideos(){
     `;
 
     div.onclick = ()=>{
-      window.location.href = "video.html?id=" + index;
+      // আসল videos অ্যারের index খুঁজে বের করতে
+      const originalIndex = videos.indexOf(video);
+      window.location.href = "video.html?id=" + originalIndex;
     };
 
-    latestGrid.appendChild(div); // ✅ loop এর ভিতরে
+    latestGrid.appendChild(div);
   });
 
   renderPagination();
