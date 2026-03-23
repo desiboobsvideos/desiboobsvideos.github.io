@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="pageTitle">Watch Video</title>
+
+<meta name="description" id="metaDesc" content="Watch video online">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph (Facebook, WhatsApp preview) -->
+<meta property="og:title" id="ogTitle" content="">
+<meta property="og:description" id="ogDesc" content="">
+<meta property="og:type" content="video.other">
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0f0f0f;
+  color:#fff;
+}
+
+header {
+  background:#1a1a1a;
+  padding:15px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+.player-wrapper {
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.5);
+}
+
+iframe {
+  width:100%;
+  height:450px;
+  border:none;
+}
+
+.title {
+  font-size:22px;
+  margin-top:12px;
+  border-left:3px solid #ff3d00;
+  padding-left:6px;
+}
+
+.description {
+  margin-top:6px;
+  color:#ccc;
+  font-size:14px;
+}
+
+.back {
+  display:inline-block;
+  margin-top:15px;
+  padding:8px 12px;
+  background:#ff3d00;
+  color:#fff;
+  border-radius:5px;
+  text-decoration:none;
+}
+
+@media(max-width:768px){
+  iframe{
+    height:220px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<div class="container">
+
+<div class="player-wrapper">
+  <iframe id="player" allowfullscreen></iframe>
+</div>
+
+<div class="title" id="title"></div>
+<div class="description" id="desc"></div>
+
+<a href="index.html" class="back">⬅ Back</a>
+<div id="footer"></div>
+</div>
+
+<script src="videos.js"></script>
+
+<script>
+// URL থেকে id নেওয়া
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+
+// video data
+const video = videos[id];
+
+// ❌ যদি video না পাওয়া যায়
+if(!video){
+  document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px'>Video not found</h2>";
+}
+
+// ✅ data load
+document.getElementById("player").src = video.src;
+document.getElementById("title").innerText = video.title;
+document.getElementById("desc").innerText = video.description;
+
+// 🔥 SEO dynamic update
+document.title = video.title + " | Watch Online";
+
+document.getElementById("metaDesc").setAttribute("content", video.description);
+
+document.getElementById("ogTitle").setAttribute("content", video.title);
+document.getElementById("ogDesc").setAttribute("content", video.description);
+function loadComponent(id, file){
+  fetch(file)
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById(id).innerHTML = data;
+    });
+}
+
+// load header & footer
+loadComponent("header", "header.html");
+loadComponent("footer", "footer.html");
+</script>
+
+</body>
+</html>
