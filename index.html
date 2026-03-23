@@ -113,6 +113,25 @@ const pagination = document.getElementById("pagination");
 let currentPage = 1;
 const videosPerPage = 6;
 
+window.addEventListener('DOMContentLoaded', ()=>{
+
+  // header/footer load
+  function loadComponent(id, file){
+    fetch(file)
+      .then(res => {
+        if(!res.ok) throw new Error('File not found: ' + file);
+        return res.text();
+      })
+      .then(data => {
+        document.getElementById(id).innerHTML = data;
+      })
+      .catch(err => console.error(err));
+  }
+
+  loadComponent("header", "header.html");
+  loadComponent("footer", "footer.html");
+  });
+
 function loadVideo(video, itemDiv){
   player.src = video.src;
   title.innerText = video.title;
@@ -186,17 +205,7 @@ function renderPagination(){
 showLatestVideos();
 loadVideo(videos[0], playlist.firstChild);
 
-function loadComponent(id, file){
-  fetch(file)
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById(id).innerHTML = data;
-    });
-}
 
-// load header & footer
-loadComponent("header", "header.html");
-loadComponent("footer", "footer.html");
 
 </script>
 
